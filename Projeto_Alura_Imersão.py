@@ -4,7 +4,7 @@
   "metadata": {
     "colab": {
       "provenance": [],
-      "authorship_tag": "ABX9TyNi3OIwrLmBHczTDKiiZx/t",
+      "authorship_tag": "ABX9TyPh+ubHCyk0sp3cPz9TEsFK",
       "include_colab_link": true
     },
     "kernelspec": {
@@ -25,42 +25,6 @@
       "source": [
         "<a href=\"https://colab.research.google.com/github/NayanBecker/Projeto.ImersaoIA_Comunica_AI/blob/main/Projeto_Alura_Imers%C3%A3o.py\" target=\"_parent\"><img src=\"https://colab.research.google.com/assets/colab-badge.svg\" alt=\"Open In Colab\"/></a>"
       ]
-    },
-    {
-      "cell_type": "code",
-      "execution_count": 3,
-      "metadata": {
-        "id": "Wx95giKziOkV"
-      },
-      "outputs": [],
-      "source": [
-        "!pip install -q -U google-generativeai"
-      ]
-    },
-    {
-      "cell_type": "code",
-      "source": [
-        "import google.generativeai as genai\n",
-        "from google.colab import userdata\n",
-        "api_key = userdata.get('SECRET_KEY')\n",
-        "genai.configure(api_key=api_key)"
-      ],
-      "metadata": {
-        "id": "_Pe51rcBpD3y"
-      },
-      "execution_count": 9,
-      "outputs": []
-    },
-    {
-      "cell_type": "code",
-      "source": [
-        "!pip install streamlit"
-      ],
-      "metadata": {
-        "id": "lv2zVavSo3Yz"
-      },
-      "execution_count": null,
-      "outputs": []
     },
     {
       "cell_type": "code",
@@ -221,41 +185,8 @@
       "metadata": {
         "id": "EP1AY_wli5-W"
       },
-      "execution_count": 11,
+      "execution_count": 18,
       "outputs": []
-    },
-    {
-      "cell_type": "code",
-      "source": [
-        "!streamlit run /usr/local/lib/python3.10/dist-packages/colab_kernel_launcher.py"
-      ],
-      "metadata": {
-        "colab": {
-          "base_uri": "https://localhost:8080/"
-        },
-        "id": "wIk2YUOep4BB",
-        "outputId": "2fcfca80-c822-4733-b36e-4f19417b2afa"
-      },
-      "execution_count": 12,
-      "outputs": [
-        {
-          "output_type": "stream",
-          "name": "stdout",
-          "text": [
-            "\n",
-            "Collecting usage statistics. To deactivate, set browser.gatherUsageStats to false.\n",
-            "\u001b[0m\n",
-            "\u001b[0m\n",
-            "\u001b[34m\u001b[1m  You can now view your Streamlit app in your browser.\u001b[0m\n",
-            "\u001b[0m\n",
-            "\u001b[34m  Network URL: \u001b[0m\u001b[1mhttp://172.28.0.12:8501\u001b[0m\n",
-            "\u001b[34m  External URL: \u001b[0m\u001b[1mhttp://34.83.253.89:8501\u001b[0m\n",
-            "\u001b[0m\n",
-            "\u001b[34m  Stopping...\u001b[0m\n",
-            "\u001b[34m  Stopping...\u001b[0m\n"
-          ]
-        }
-      ]
     }
   ]
 }
