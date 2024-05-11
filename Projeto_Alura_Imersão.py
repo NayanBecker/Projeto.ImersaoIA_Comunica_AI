@@ -1,192 +1,152 @@
-{
-  "nbformat": 4,
-  "nbformat_minor": 0,
-  "metadata": {
-    "colab": {
-      "provenance": [],
-      "authorship_tag": "ABX9TyPh+ubHCyk0sp3cPz9TEsFK",
-      "include_colab_link": true
-    },
-    "kernelspec": {
-      "name": "python3",
-      "display_name": "Python 3"
-    },
-    "language_info": {
-      "name": "python"
-    }
-  },
-  "cells": [
-    {
-      "cell_type": "markdown",
-      "metadata": {
-        "id": "view-in-github",
-        "colab_type": "text"
-      },
-      "source": [
-        "<a href=\"https://colab.research.google.com/github/NayanBecker/Projeto.ImersaoIA_Comunica_AI/blob/main/Projeto_Alura_Imers%C3%A3o.py\" target=\"_parent\"><img src=\"https://colab.research.google.com/assets/colab-badge.svg\" alt=\"Open In Colab\"/></a>"
-      ]
-    },
-    {
-      "cell_type": "code",
-      "source": [
-        "import streamlit as st\n",
-        "from pathlib import Path\n",
-        "import hashlib\n",
-        "import google.generativeai as genai\n",
-        "import cv2\n",
-        "import os\n",
-        "import shutil\n",
-        "import tempfile\n",
-        "genai.configure(api_key=\"AIzaSyC_yCVTTBzLoj76dJGqRkkKBHmOrjVybTc\")\n",
-        "\n",
-        "# Set up the model\n",
-        "generation_config = {\n",
-        "  \"temperature\": 1,\n",
-        "  \"top_p\": 0.95,\n",
-        "  \"top_k\": 0,\n",
-        "  \"max_output_tokens\": 8192,\n",
-        "}\n",
-        "\n",
-        "safety_settings = [\n",
-        "  {\n",
-        "    \"category\": \"HARM_CATEGORY_HARASSMENT\",\n",
-        "    \"threshold\": \"BLOCK_MEDIUM_AND_ABOVE\"\n",
-        "  },\n",
-        "  {\n",
-        "    \"category\": \"HARM_CATEGORY_HATE_SPEECH\",\n",
-        "    \"threshold\": \"BLOCK_MEDIUM_AND_ABOVE\"\n",
-        "  },\n",
-        "  {\n",
-        "    \"category\": \"HARM_CATEGORY_SEXUALLY_EXPLICIT\",\n",
-        "    \"threshold\": \"BLOCK_MEDIUM_AND_ABOVE\"\n",
-        "  },\n",
-        "  {\n",
-        "    \"category\": \"HARM_CATEGORY_DANGEROUS_CONTENT\",\n",
-        "    \"threshold\": \"BLOCK_MEDIUM_AND_ABOVE\"\n",
-        "  },\n",
-        "]\n",
-        "\n",
-        "system_instruction = \"Fale tudo como se fosse um especialista em Oratória, que avalia e ajuda a melhorar a comunicação e oratoria de outras pessoas, responda sempre com dicas simples e peça sempre um retorno de seu cliente\"\n",
-        "\n",
-        "model = genai.GenerativeModel(model_name=\"gemini-1.5-pro-latest\",\n",
-        "                              generation_config=generation_config,\n",
-        "                              system_instruction=system_instruction,\n",
-        "                              safety_settings=safety_settings)\n",
-        "\n",
-        "import cv2\n",
-        "\n",
-        "class File:\n",
-        "  def __init__(self, file_path: str, display_name: str = None):\n",
-        "    self.file_path = file_path\n",
-        "    if display_name:\n",
-        "      self.display_name = display_name\n",
-        "    self.timestamp = get_timestamp(file_path)\n",
-        "\n",
-        "  def set_file_response(self, response):\n",
-        "    self.response = response\n",
-        "def get_timestamp(filename):\n",
-        "  \"\"\"Extracts the frame count (as an integer) from a filename with the format\n",
-        "     'output_file_prefix_frame00:00.jpg'.\n",
-        "  \"\"\"\n",
-        "  parts = filename.split(FRAME_PREFIX)\n",
-        "  if len(parts) != 2:\n",
-        "      return None  # Indicates the filename might be incorrectly formatted\n",
-        "  return parts[1].split('.')[0]\n",
-        "\n",
-        "# Create or cleanup existing extracted image frames directory.\n",
-        "FRAME_EXTRACTION_DIRECTORY = \"content/frames\"\n",
-        "FRAME_PREFIX = \"_frame\"\n",
-        "def create_frame_output_dir(output_dir):\n",
-        "  if not os.path.exists(output_dir):\n",
-        "    os.makedirs(output_dir)\n",
-        "  else:\n",
-        "    shutil.rmtree(output_dir)\n",
-        "    os.makedirs(output_dir)\n",
-        "\n",
-        "def extract_frame_from_video(video_file_path):\n",
-        "  print(f\"Extracting {video_file_path} at 1 frame per second. This might take a bit...\")\n",
-        "  create_frame_output_dir(FRAME_EXTRACTION_DIRECTORY)\n",
-        "  vidcap = cv2.VideoCapture(video_file_path)\n",
-        "  fps = vidcap.get(cv2.CAP_PROP_FPS)\n",
-        "  frame_duration = 1 / fps  # Time interval between frames (in seconds)\n",
-        "  output_file_prefix = os.path.basename(video_file_path).replace('.', '_')\n",
-        "  frame_count = 0\n",
-        "  count = 0\n",
-        "  while vidcap.isOpened():\n",
-        "      success, frame = vidcap.read()\n",
-        "      if not success: # End of video\n",
-        "          break\n",
-        "      if int(count / fps) == frame_count: # Extract a frame every second\n",
-        "          min = frame_count // 60\n",
-        "          sec = frame_count % 60\n",
-        "          time_string = f\"{min:02d}:{sec:02d}\"\n",
-        "          image_name = f\"{output_file_prefix}{FRAME_PREFIX}{time_string}.jpg\"\n",
-        "          output_filename = os.path.join(FRAME_EXTRACTION_DIRECTORY, image_name)\n",
-        "          cv2.imwrite(output_filename, frame)\n",
-        "          frame_count += 1\n",
-        "      count += 1\n",
-        "  vidcap.release() # Release the capture object\\n\",\n",
-        "  print(f\"Completed video frame extraction!\\n\\nExtracted: {frame_count} frames\")\n",
-        "\n",
-        "\n",
-        "convo = model.start_chat(history=[])\n",
-        "\n",
-        "# Título do aplicativo Streamlit\n",
-        "st.title(\"Comunica_AI\")\n",
-        "\n",
-        "# Widget para upload de vídeo\n",
-        "uploaded_video = st.file_uploader(\"Envie o seu Video para Avaliação! \", type=[\"mp4\"])\n",
-        "def make_request(prompt, files):\n",
-        "  request = [prompt]\n",
-        "  for file in files:\n",
-        "    request.append(file.timestamp)\n",
-        "    request.append(file.response)\n",
-        "  return request\n",
-        "\n",
-        "\n",
-        "if uploaded_video is not None:\n",
-        "  # Exibe o vídeo carregado\n",
-        "  st.video(uploaded_video)\n",
-        "  #video_bytes = uploaded_video.read()\n",
-        "  temp_file_path=\"\"\n",
-        "  with tempfile.NamedTemporaryFile(delete=False) as temp_file:\n",
-        "\t  temp_file.write(uploaded_video.read())\n",
-        "\t  temp_file_path = temp_file.name\n",
-        "  # Extrair frames do vídeo\n",
-        "  print (temp_file_path)\n",
-        "  print (uploaded_video)\n",
-        "  print (uploaded_video.name)\n",
-        "  frames = extract_frame_from_video(temp_file_path)\n",
-        "\n",
-        "  files = os.listdir(FRAME_EXTRACTION_DIRECTORY)\n",
-        "  files = sorted(files)\n",
-        "\n",
-        "  files_to_upload = []\n",
-        "  for file in files:\n",
-        "    files_to_upload.append(File(file_path=os.path.join(FRAME_EXTRACTION_DIRECTORY, file)))\n",
-        "  full_video = False\n",
-        "  uploaded_files = []\n",
-        "  print(f'Uploading {len(files_to_upload) if full_video else 10} files. This might take a bit...')\n",
-        "\n",
-        "  for file in files_to_upload:\n",
-        "    print(f'Uploading: {file.file_path}...')\n",
-        "    response = genai.upload_file(path=file.file_path)\n",
-        "    file.set_file_response(response)\n",
-        "    uploaded_files.append(file)\n",
-        "\n",
-        "  request = make_request(\"identifique neste vídeo momentos em que pode ser melhorada a orataria, quero que você de Dicas de melhorias, e o por que de estar Corrigindo o modo de oratoria da pessoa. Preciso que seja identificado: Comunicação verbal como, repetições de palavras, tons da voz; Comunicação não verbal como, postura da pessoa, maneira que utiliza as mãos para explicar, e expressões facias. Escreva em Português, Brasil. \", files_to_upload)\n",
-        "  response = model.generate_content(request,\n",
-        "                                  request_options={\"timeout\": 600})\n",
-        "  st.write(response.text)\n",
-        "\n",
-        "\n",
-        ""
-      ],
-      "metadata": {
-        "id": "EP1AY_wli5-W"
-      },
-      "execution_count": 18,
-      "outputs": []
-    }
-  ]
+import streamlit as st
+from pathlib import Path
+import hashlib
+import google.generativeai as genai
+import cv2
+import os
+import shutil
+import tempfile
+genai.configure(api_key="AIzaSyC_yCVTTBzLoj76dJGqRkkKBHmOrjVybTc")
+
+# Set up the model
+generation_config = {
+  "temperature": 1,
+  "top_p": 0.95,
+  "top_k": 0,
+  "max_output_tokens": 8192,
 }
+
+safety_settings = [
+  {
+    "category": "HARM_CATEGORY_HARASSMENT",
+    "threshold": "BLOCK_MEDIUM_AND_ABOVE"
+  },
+  {
+    "category": "HARM_CATEGORY_HATE_SPEECH",
+    "threshold": "BLOCK_MEDIUM_AND_ABOVE"
+  },
+  {
+    "category": "HARM_CATEGORY_SEXUALLY_EXPLICIT",
+    "threshold": "BLOCK_MEDIUM_AND_ABOVE"
+  },
+  {
+    "category": "HARM_CATEGORY_DANGEROUS_CONTENT",
+    "threshold": "BLOCK_MEDIUM_AND_ABOVE"
+  },
+]
+
+system_instruction = "Fale tudo como se fosse um especialista em Oratória, que avalia e ajuda a melhorar a comunicação e oratoria de outras pessoas, responda sempre com dicas simples e peça sempre um retorno de seu cliente"
+
+model = genai.GenerativeModel(model_name="gemini-1.5-pro-latest",
+                              generation_config=generation_config,
+                              system_instruction=system_instruction,
+                              safety_settings=safety_settings)
+
+import cv2
+
+class File:
+  def __init__(self, file_path: str, display_name: str = None):
+    self.file_path = file_path
+    if display_name:
+      self.display_name = display_name
+    self.timestamp = get_timestamp(file_path)
+
+  def set_file_response(self, response):
+    self.response = response
+def get_timestamp(filename):
+  """Extracts the frame count (as an integer) from a filename with the format
+     'output_file_prefix_frame00:00.jpg'.
+  """
+  parts = filename.split(FRAME_PREFIX)
+  if len(parts) != 2:
+      return None  # Indicates the filename might be incorrectly formatted
+  return parts[1].split('.')[0]
+
+# Create or cleanup existing extracted image frames directory.
+FRAME_EXTRACTION_DIRECTORY = "content/frames"
+FRAME_PREFIX = "_frame"
+def create_frame_output_dir(output_dir):
+  if not os.path.exists(output_dir):
+    os.makedirs(output_dir)
+  else:
+    shutil.rmtree(output_dir)
+    os.makedirs(output_dir)
+
+def extract_frame_from_video(video_file_path):
+  print(f"Extracting {video_file_path} at 1 frame per second. This might take a bit...")
+  create_frame_output_dir(FRAME_EXTRACTION_DIRECTORY)
+  vidcap = cv2.VideoCapture(video_file_path)
+  fps = vidcap.get(cv2.CAP_PROP_FPS)
+  frame_duration = 1 / fps  # Time interval between frames (in seconds)
+  output_file_prefix = os.path.basename(video_file_path).replace('.', '_')
+  frame_count = 0
+  count = 0
+  while vidcap.isOpened():
+      success, frame = vidcap.read()
+      if not success: # End of video
+          break
+      if int(count / fps) == frame_count: # Extract a frame every second
+          min = frame_count // 60
+          sec = frame_count % 60
+          time_string = f"{min:02d}:{sec:02d}"
+          image_name = f"{output_file_prefix}{FRAME_PREFIX}{time_string}.jpg"
+          output_filename = os.path.join(FRAME_EXTRACTION_DIRECTORY, image_name)
+          cv2.imwrite(output_filename, frame)
+          frame_count += 1
+      count += 1
+  vidcap.release() # Release the capture object\n",
+  print(f"Completed video frame extraction!\n\nExtracted: {frame_count} frames")
+
+
+convo = model.start_chat(history=[])
+
+# Título do aplicativo Streamlit
+st.title("Comunica_AI")
+
+# Widget para upload de vídeo
+uploaded_video = st.file_uploader("Envie o seu Video para Avaliação! ", type=["mp4"])
+def make_request(prompt, files):
+  request = [prompt]
+  for file in files:
+    request.append(file.timestamp)
+    request.append(file.response)
+  return request
+  
+  
+if uploaded_video is not None:
+  # Exibe o vídeo carregado
+  st.video(uploaded_video)
+  #video_bytes = uploaded_video.read()
+  temp_file_path=""
+  with tempfile.NamedTemporaryFile(delete=False) as temp_file:
+	  temp_file.write(uploaded_video.read())
+	  temp_file_path = temp_file.name
+  # Extrair frames do vídeo
+  print (temp_file_path)
+  print (uploaded_video)
+  print (uploaded_video.name)
+  frames = extract_frame_from_video(temp_file_path) 
+  
+  files = os.listdir(FRAME_EXTRACTION_DIRECTORY)
+  files = sorted(files)
+
+  files_to_upload = []
+  for file in files:
+    files_to_upload.append(File(file_path=os.path.join(FRAME_EXTRACTION_DIRECTORY, file)))
+  full_video = False
+  uploaded_files = []
+  print(f'Uploading {len(files_to_upload) if full_video else 10} files. This might take a bit...')
+
+  for file in files_to_upload:
+    print(f'Uploading: {file.file_path}...')
+    response = genai.upload_file(path=file.file_path)
+    file.set_file_response(response)
+    uploaded_files.append(file)
+  
+  request = make_request("identifique neste vídeo momentos em que pode ser melhorada a orataria, quero que você de Dicas de melhorias, e o por que de estar Corrigindo o modo de oratoria da pessoa. Preciso que seja identificado: Comunicação verbal como, repetições de palavras, tons da voz; Comunicação não verbal como, postura da pessoa, maneira que utiliza as mãos para explicar, e expressões facias. Escreva em Português, Brasil. ", files_to_upload)
+  response = model.generate_content(request,
+                                  request_options={"timeout": 600})
+  st.write(response.text)
+
+  
+  
