@@ -1,0 +1,1 @@
+# Projeto.ImersaoIA_Comunica_AI
