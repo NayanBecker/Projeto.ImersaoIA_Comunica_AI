@@ -1,6 +1,6 @@
 # Projeto.ImersaoIA_Comunica_AI
 
-##Projeto: Comunica_AI - Avaliação e Melhoria da Oratória através da Inteligência Artificial
+## Projeto: Comunica_AI - Avaliação e Melhoria da Oratória através da Inteligência Artificial
 
 Este repositório contém um aplicativo desenvolvido em Python utilizando as bibliotecas Google GenerativeAI e Streamlit. O objetivo do aplicativo é avaliar e fornecer feedback para melhorar a comunicação e oratória de indivíduos, utilizando modelos de inteligência artificial.
 
